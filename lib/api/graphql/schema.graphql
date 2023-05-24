@@ -1,0 +1,21 @@
+type Query {
+	listAudioFiles: [DocAudioFile] @aws_cognito_user_pools
+}
+
+type Mutation {
+	createAudioFromDocument(input: DocAudioInput!): DocAudioFile
+		@aws_cognito_user_pools
+}
+
+type DocAudioFile {
+	id: ID!
+	owner: String!
+	createdAt: AWSDateTime!
+	updatedAt: AWSDateTime!
+	documentKey: String!
+	audioKey: String!
+}
+
+input DocAudioInput {
+	documentKey: String!
+}
