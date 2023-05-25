@@ -106,15 +106,13 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		typeName: 'Query',
 		fieldName: 'listAudioFiles',
 		code: awsAppsync.Code.fromInline(`
-		import { Context } from '@aws-appsync/utils'
-
-		export function request(ctx: Context) {
+		export function request(ctx) {
 			console.log(ctx.args)
 
 			return {}
 		}
 
-		export function response(ctx: Context) {
+		export function response(ctx) {
 			return ctx.prev.result
 		}`),
 		runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
@@ -126,15 +124,13 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		typeName: 'Mutation',
 		fieldName: 'createAudioFromDocument',
 		code: awsAppsync.Code.fromInline(`
-		import { Context } from '@aws-appsync/utils'
-
-		export function request(ctx: Context) {
+		export function request(ctx) {
 			console.log(ctx.args)
 			ctx.stash.bucketName = '${props.bucketName}'
 			return {}
 		}
 
-		export function response(ctx: Context) {
+		export function response(ctx) {
 			return ctx.prev.result
 		}`),
 		runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
