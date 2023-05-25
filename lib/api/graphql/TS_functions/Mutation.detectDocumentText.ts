@@ -13,7 +13,7 @@ export function request(ctx: Context) {
 				Document: {
 					S3Object: {
 						Bucket: ctx.stash.bucketName,
-						Name: ctx.args.input.documentKey,
+						Name: `protected/test/${ctx.args.input.documentKey}`,
 					},
 				},
 			},
