@@ -21,7 +21,7 @@ export function request(
 			createdAt: util.time.nowISO8601(),
 			updatedAt: util.time.nowISO8601(),
 			documentKey: ctx.args.input.documentKey,
-			audioKey: 'something.mp3',
+			audioKey: ctx.prev.result.audioKey,
 		}),
 	}
 }

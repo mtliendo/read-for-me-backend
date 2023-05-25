@@ -107,6 +107,26 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 	translateDatasource.grantPrincipal.addToPrincipalPolicy(allowTranslateAccess)
 	//* End: Setup access for HTTP function to call translate
 
+	//* Begin: Setup access for HTTP function to call Comprehend
+	const pollyDatasource = api.addHttpDataSource(
+		'pollyDatasource',
+		'https://polly.us-east-1.amazonaws.com',
+		{
+			authorizationConfig: {
+				signingRegion: process.env.CDK_DEFAULT_REGION!,
+				signingServiceName: 'polly',
+			},
+		}
+	)
+
+	const allowPollyAccess = new PolicyStatement({
+		actions: ['polly:StartSpeechSynthesisTask'],
+		resources: [`*`],
+	})
+
+	pollyDatasource.grantPrincipal.addToPrincipalPolicy(allowPollyAccess)
+	//* End: Setup access for HTTP function to call translate
+
 	const listDocAudioFunction = new awsAppsync.AppsyncFunction(
 		scope,
 		'listDocAudioFunction',
@@ -168,6 +188,19 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 			),
 		}
 	)
+	const createAudioFunction = new awsAppsync.AppsyncFunction(
+		scope,
+		'createAudioFunction',
+		{
+			name: 'createAudioFunction',
+			api,
+			dataSource: translateDatasource,
+			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
+			code: awsAppsync.Code.fromAsset(
+				path.join(__dirname, 'graphql/JS_functions/Mutation.createAudio.js')
+			),
+		}
+	)
 
 	const createSaveDocAudioFunction = new awsAppsync.AppsyncFunction(
 		scope,
@@ -220,6 +253,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 			detectDocumentTextFunction,
 			detectDominantLanguageFunction,
 			translateTextFunction,
+			createAudioFunction,
 			createSaveDocAudioFunction,
 		],
 	})

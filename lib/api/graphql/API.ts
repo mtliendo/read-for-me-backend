@@ -4,7 +4,15 @@
 
 export type DocAudioInput = {
   documentKey: string,
+  preferredLanguage: PREFERRED_LANGUAGE_ENUM,
+  cognitoIdentityId: string,
 };
+
+export enum PREFERRED_LANGUAGE_ENUM {
+  en = "en",
+  es = "es",
+}
+
 
 export type DocAudioFile = {
   __typename: "DocAudioFile",
