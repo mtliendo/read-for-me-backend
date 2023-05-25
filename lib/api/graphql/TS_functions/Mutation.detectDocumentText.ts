@@ -14,7 +14,7 @@ export function request(ctx: Context) {
 				Document: {
 					S3Object: {
 						Bucket: ctx.stash.bucketName,
-						Name: `protected/${ctx.args.input.idenityPoolId}/${ctx.args.input.documentKey}`,
+						Name: `protected/${ctx.args.input.cognitoIdentityId}/${ctx.args.input.documentKey}`,
 					},
 				},
 			},
