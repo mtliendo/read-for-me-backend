@@ -100,7 +100,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 	)
 
 	const allowTranslateAccess = new PolicyStatement({
-		actions: ['translate:*'],
+		actions: ['translate:TranslateText'],
 		resources: [`*`],
 	})
 
