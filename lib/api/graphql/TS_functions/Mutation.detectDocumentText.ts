@@ -1,4 +1,5 @@
 import { Context } from '@aws-appsync/utils'
+import { extractWordsInOrder } from './utils/extractWordsInOrder'
 
 export function request(ctx: Context) {
 	return {
@@ -22,9 +23,13 @@ export function request(ctx: Context) {
 }
 
 export function response(ctx: Context) {
-	console.log('in the response')
-	console.log(ctx.result.body)
-	const result = JSON.parse(ctx.result.body)
-	console.log(result)
-	return result
+	// Assume textractResponse is the response from Textract's detect-document-text
+	let wordsInOrder = extractWordsInOrder(JSON.parse(ctx.result.body))
+
+	// Now you can do what you want with the wordsInOrder array
+	const result = wordsInOrder.join(' ')
+
+	console.log({ result })
+
+	return { text: result }
 }

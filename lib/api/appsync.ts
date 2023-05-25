@@ -39,6 +39,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		props.docAudioTable
 	)
 
+	//* Begin: Setup access for HTTP function to call Textract
 	const textractDataSource = api.addHttpDataSource(
 		'textractDataSource',
 		'https://textract.us-east-1.amazonaws.com',
@@ -62,6 +63,51 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 
 	textractDataSource.grantPrincipal.addToPrincipalPolicy(allowTextractAccess)
 	textractDataSource.grantPrincipal.addToPrincipalPolicy(allowToGetObjectFromS3)
+
+	//* End: Setup access for HTTP function to call Textract
+
+	//* Begin: Setup access for HTTP function to call Comprehend
+	const comprehendDatasource = api.addHttpDataSource(
+		'comprehendDatasource',
+		'https://comprehend.us-east-1.amazonaws.com',
+		{
+			authorizationConfig: {
+				signingRegion: process.env.CDK_DEFAULT_REGION!,
+				signingServiceName: 'comprehend',
+			},
+		}
+	)
+
+	const allowComprehendAccess = new PolicyStatement({
+		actions: ['comprehend:DetectDominantLanguage'],
+		resources: [`*`],
+	})
+
+	comprehendDatasource.grantPrincipal.addToPrincipalPolicy(
+		allowComprehendAccess
+	)
+	//* End: Setup access for HTTP function to call Comprehend
+	//* Begin: Setup access for HTTP function to call Comprehend
+	const translateDatasource = api.addHttpDataSource(
+		'translateDatasource',
+		'https://translate.us-east-1.amazonaws.com',
+		{
+			authorizationConfig: {
+				signingRegion: process.env.CDK_DEFAULT_REGION!,
+				signingServiceName: 'translate',
+			},
+		}
+	)
+
+	const allowTranslateAccess = new PolicyStatement({
+		actions: ['translate:DetectDominantLanguage'],
+		resources: [`*`],
+	})
+
+	translateDatasource.grantPrincipal.addToPrincipalPolicy(allowTranslateAccess)
+	//* End: Setup access for HTTP function to call translate
+
+	//Todo: add fucntion for tanslate and put in pipeline
 
 	const listDocAudioFunction = new awsAppsync.AppsyncFunction(
 		scope,
@@ -90,6 +136,37 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 					__dirname,
 					'graphql/JS_functions/Mutation.detectDocumentText.js'
 				)
+			),
+		}
+	)
+
+	const detectDominantLanguageFunction = new awsAppsync.AppsyncFunction(
+		scope,
+		'detectDominantLanguageFunction',
+		{
+			name: 'detectDominantLanguageFunction',
+			api,
+			dataSource: comprehendDatasource,
+			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
+			code: awsAppsync.Code.fromAsset(
+				path.join(
+					__dirname,
+					'graphql/JS_functions/Mutation.detectDominantLanguage.js'
+				)
+			),
+		}
+	)
+
+	const translateTextFunction = new awsAppsync.AppsyncFunction(
+		scope,
+		'translateTextFunction',
+		{
+			name: 'translateTextFunction',
+			api,
+			dataSource: comprehendDatasource,
+			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
+			code: awsAppsync.Code.fromAsset(
+				path.join(__dirname, 'graphql/JS_functions/Mutation.translateText.js')
 			),
 		}
 	)
@@ -141,7 +218,12 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 			return ctx.prev.result
 		}`),
 		runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
-		pipelineConfig: [detectDocumentTextFunction, createSaveDocAudioFunction],
+		pipelineConfig: [
+			detectDocumentTextFunction,
+			detectDominantLanguageFunction,
+			translateTextFunction,
+			createSaveDocAudioFunction,
+		],
 	})
 
 	return api
