@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { build } from 'esbuild'
-import glob from 'glob'
+import { glob } from 'glob'
 const files = await glob('lib/api/graphql/TS_functions/**/*.ts')
 
 console.log(files)
