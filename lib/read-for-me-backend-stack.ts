@@ -27,6 +27,7 @@ export class ReadForMeBackendStack extends cdk.Stack {
 		const appsyncAPI = createAPI(this, {
 			appName,
 			bucketName: DocAudioBucket.fileStorageBucket.bucketName,
+			bucketARN: DocAudioBucket.fileStorageBucket.bucketArn,
 			docAudioTable: DocAudioTable,
 			userpool: DocAudioAuth.userPool,
 			unauthenticatedRole: DocAudioAuth.identityPool.unauthenticatedRole,

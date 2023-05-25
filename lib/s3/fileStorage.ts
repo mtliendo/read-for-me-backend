@@ -58,14 +58,6 @@ export function createDocAudioBucket(
 			`arn:aws:s3:::${fileStorageBucket.bucketName}/protected/\${cognito-identity.amazonaws.com:sub}/*`,
 		],
 	})
-	const allowTextractToReadProtectedDirectory = new iam.PolicyStatement({
-		effect: iam.Effect.ALLOW,
-		principals: [new iam.ServicePrincipal('textract.amazonaws.com')],
-		actions: ['s3:GetObject'],
-		resources: [`arn:aws:s3:::${fileStorageBucket.bucketName}/protected/*`],
-	})
-
-	fileStorageBucket.addToResourcePolicy(allowTextractToReadProtectedDirectory)
 
 	new iam.ManagedPolicy(scope, 'SignedInUserManagedPolicy', {
 		description:

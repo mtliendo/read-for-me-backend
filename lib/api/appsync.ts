@@ -10,6 +10,7 @@ type AppSyncAPIProps = {
 	unauthenticatedRole: IRole
 	userpool: UserPool
 	bucketName: string
+	bucketARN: string
 	docAudioTable: Table
 }
 
@@ -54,7 +55,13 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		resources: [`*`],
 	})
 
+	const allowToGetObjectFromS3 = new PolicyStatement({
+		actions: ['s3:GetObject'],
+		resources: [`${props.bucketARN}/protected/*`],
+	})
+
 	textractDataSource.grantPrincipal.addToPrincipalPolicy(allowTextractAccess)
+	textractDataSource.grantPrincipal.addToPrincipalPolicy(allowToGetObjectFromS3)
 
 	const listDocAudioFunction = new awsAppsync.AppsyncFunction(
 		scope,
