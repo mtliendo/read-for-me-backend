@@ -194,7 +194,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		{
 			name: 'createAudioFunction',
 			api,
-			dataSource: translateDatasource,
+			dataSource: pollyDatasource,
 			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
 			code: awsAppsync.Code.fromAsset(
 				path.join(__dirname, 'graphql/JS_functions/Mutation.createAudio.js')
