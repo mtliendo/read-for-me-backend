@@ -100,14 +100,12 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 	)
 
 	const allowTranslateAccess = new PolicyStatement({
-		actions: ['translate:DetectDominantLanguage'],
+		actions: ['translate:*'],
 		resources: [`*`],
 	})
 
 	translateDatasource.grantPrincipal.addToPrincipalPolicy(allowTranslateAccess)
 	//* End: Setup access for HTTP function to call translate
-
-	//Todo: add fucntion for tanslate and put in pipeline
 
 	const listDocAudioFunction = new awsAppsync.AppsyncFunction(
 		scope,
