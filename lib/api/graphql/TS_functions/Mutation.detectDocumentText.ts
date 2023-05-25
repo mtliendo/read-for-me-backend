@@ -7,7 +7,7 @@ export function request(ctx: Context) {
 		params: {
 			headers: {
 				'content-type': 'application/x-amz-json-1.1',
-				'x-amz-target': 'AmazonTextract.DetectDocumentText',
+				'x-amz-target': 'Textract.DetectDocumentText',
 			},
 			body: {
 				Document: {
