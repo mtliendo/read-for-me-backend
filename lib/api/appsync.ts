@@ -65,7 +65,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 			dataSource: docAudioTableDataSource,
 			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
 			code: awsAppsync.Code.fromAsset(
-				path.join(__dirname, 'graphql/JS_functions/Query.listStories.js')
+				path.join(__dirname, 'graphql/JS_functions/Query.listDocAudioFiles.js')
 			),
 		}
 	)
@@ -121,7 +121,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		pipelineConfig: [listDocAudioFunction],
 	})
 
-	new awsAppsync.Resolver(scope, 'createStoryResolver', {
+	new awsAppsync.Resolver(scope, 'createAudioFromDocumentResolver', {
 		api,
 		typeName: 'Mutation',
 		fieldName: 'createAudioFromDocument',
