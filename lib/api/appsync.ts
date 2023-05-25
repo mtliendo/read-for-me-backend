@@ -123,8 +123,15 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		actions: ['polly:StartSpeechSynthesisTask'],
 		resources: [`*`],
 	})
+	const allowS3UploadAccess = new PolicyStatement({
+		actions: ['s3:PutObject'],
+		resources: [`${props.bucketARN}/protected/*`],
+	})
 
 	pollyDatasource.grantPrincipal.addToPrincipalPolicy(allowPollyAccess)
+	pollyDatasource.grantPrincipal.addToPrincipalPolicy(allowS3UploadAccess)
+
+	//* End: Setup access for HTTP function to call Comprehendincipal.addToPrincipalPolicy(allowPollyAccess)
 	//* End: Setup access for HTTP function to call translate
 
 	const listDocAudioFunction = new awsAppsync.AppsyncFunction(
