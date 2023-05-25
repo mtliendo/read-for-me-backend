@@ -24,7 +24,7 @@ export function request(ctx: Context) {
 export function response(ctx: Context) {
 	console.log('in the response')
 	console.log(ctx.result.body)
-	const result = JSON.parse(ctx.result.body).Parameter.Value
+	const result = JSON.parse(ctx.result.body)
 	console.log(result)
 	return result
 }
