@@ -13,7 +13,7 @@ export function request(
 
 	return {
 		method: 'POST',
-		resourcePath: '/',
+		resourcePath: '/v1/synthesisTasks',
 		params: {
 			headers: {
 				'content-type': 'application/x-amz-json-1.1',
