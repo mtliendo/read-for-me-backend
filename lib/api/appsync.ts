@@ -161,7 +161,7 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 		{
 			name: 'translateTextFunction',
 			api,
-			dataSource: comprehendDatasource,
+			dataSource: translateDatasource,
 			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
 			code: awsAppsync.Code.fromAsset(
 				path.join(__dirname, 'graphql/JS_functions/Mutation.translateText.js')
