@@ -5,7 +5,7 @@ export function request(
 	ctx: Context<CreateAudioFromDocumentMutationVariables>
 ) {
 	const preferredSpeakerMap = {
-		en: 'Kimberly',
+		en: 'Ruth',
 		es: 'Mia',
 	}
 
