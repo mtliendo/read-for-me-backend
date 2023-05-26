@@ -40,6 +40,14 @@ export type CreateAudioFromDocumentMutation = {
   } | null,
 };
 
+export type PublishMutationVariables = {
+  data?: string | null,
+};
+
+export type PublishMutation = {
+  publish?: string | null,
+};
+
 export type ListAudioFilesQuery = {
   listAudioFiles?:  Array< {
     __typename: "DocAudioFile",
@@ -50,4 +58,8 @@ export type ListAudioFilesQuery = {
     documentKey: string,
     audioKey: string,
   } | null > | null,
+};
+
+export type SubscribeSubscription = {
+  subscribe?: string | null,
 };

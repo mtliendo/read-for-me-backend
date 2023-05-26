@@ -25,7 +25,7 @@ export function request(
 				VoiceId: selectedVoice,
 				Engine: 'neural',
 				OutputS3BucketName: ctx.stash.bucketName,
-				OutputS3KeyPrefix: `protected/${ctx.args.input.cognitoIdentityId}/`,
+				OutputS3KeyPrefix: `protected/${ctx.args.input.cognitoIdentityId}/audio/`,
 			},
 		},
 	}

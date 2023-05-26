@@ -27,17 +27,45 @@ export function createAPI(scope: Construct, props: AppSyncAPIProps) {
 					userPool: props.userpool,
 				},
 			},
+			additionalAuthorizationModes: [
+				{ authorizationType: awsAppsync.AuthorizationType.IAM },
+			],
 		},
 		xrayEnabled: true,
 		logConfig: {
 			fieldLogLevel: awsAppsync.FieldLogLevel.ALL,
 		},
 	})
+	const NONEDataSource = api.addNoneDataSource(`NoneDataSource`)
 
 	const docAudioTableDataSource = api.addDynamoDbDataSource(
 		`docAudioTableDataSource`,
 		props.docAudioTable
 	)
+	const publishFunction = new awsAppsync.AppsyncFunction(
+		scope,
+		'publishFunction',
+		{
+			name: 'publishFunction',
+			api,
+			dataSource: NONEDataSource,
+			runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
+			code: awsAppsync.Code.fromAsset(
+				path.join(__dirname, 'graphql/JS_functions/Mutation.publish.js')
+			),
+		}
+	)
+
+	new awsAppsync.Resolver(scope, 'publishResolver', {
+		api,
+		typeName: 'Mutation',
+		fieldName: 'publish',
+		code: awsAppsync.Code.fromAsset(
+			path.join(__dirname, 'graphql/JS_functions/passThrough.js')
+		),
+		runtime: awsAppsync.FunctionRuntime.JS_1_0_0,
+		pipelineConfig: [publishFunction],
+	})
 
 	//* Begin: Setup access for HTTP function to call Textract
 	const textractDataSource = api.addHttpDataSource(

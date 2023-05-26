@@ -5,6 +5,8 @@ import { createTable } from './tables/docAudio'
 import { createAPI } from './api/appsync'
 import { createAuth } from './cognito/auth'
 import { createDocAudioBucket } from './s3/fileStorage'
+import { createPublishToAppSyncFunc } from './functions/publishToAppSync/construct'
+import { ServicePrincipal } from 'aws-cdk-lib/aws-iam'
 
 export class ReadForMeBackendStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -19,8 +21,15 @@ export class ReadForMeBackendStack extends cdk.Stack {
 			appName,
 		})
 
+		const s3LambdaTrigger = createPublishToAppSyncFunc(this, {
+			appName,
+		})
+
+		s3LambdaTrigger.grantInvoke(new ServicePrincipal('s3.amazonaws.com'))
+
 		const DocAudioBucket = createDocAudioBucket(this, {
 			appName,
+			s3LambdaTrigger: s3LambdaTrigger,
 			authenticatedRole: DocAudioAuth.identityPool.authenticatedRole,
 		})
 
@@ -32,6 +41,10 @@ export class ReadForMeBackendStack extends cdk.Stack {
 			userpool: DocAudioAuth.userPool,
 			unauthenticatedRole: DocAudioAuth.identityPool.unauthenticatedRole,
 		})
+
+		appsyncAPI.grantMutation(s3LambdaTrigger, 'publish')
+
+		s3LambdaTrigger.addEnvironment('APPSYNC_URL', appsyncAPI.graphqlUrl)
 
 		new CfnOutput(this, 'cognitoUserPoolId', {
 			value: DocAudioAuth.userPool.userPoolId,

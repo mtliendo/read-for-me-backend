@@ -14,3 +14,8 @@ export const createAudioFromDocument = /* GraphQL */ `
     }
   }
 `;
+export const publish = /* GraphQL */ `
+  mutation Publish($data: AWSJSON) {
+    publish(data: $data)
+  }
+`;

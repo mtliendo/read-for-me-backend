@@ -1,12 +1,13 @@
 import { Construct } from 'constructs'
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as iam from 'aws-cdk-lib/aws-iam'
-import * as awsCloudfront from 'aws-cdk-lib/aws-cloudfront'
-import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins'
+import { LambdaDestination } from 'aws-cdk-lib/aws-s3-notifications'
+import { Function } from 'aws-cdk-lib/aws-lambda'
 
 type CreateDocAudioBucketProps = {
 	appName: string
 	authenticatedRole: iam.IRole
+	s3LambdaTrigger: Function
 }
 
 export function createDocAudioBucket(
@@ -34,19 +35,12 @@ export function createDocAudioBucket(
 		],
 	})
 
-	// Create a CloudFront distribution to serve the bucket (not used in this app)
-	const fileStorageBucketCFDistribution = new awsCloudfront.Distribution(
-		scope,
-		`${props.appName}-CDN`,
+	fileStorageBucket.addEventNotification(
+		s3.EventType.OBJECT_CREATED,
+		new LambdaDestination(props.s3LambdaTrigger),
 		{
-			defaultBehavior: {
-				origin: new S3Origin(fileStorageBucket, { originPath: '/public' }),
-				cachePolicy: awsCloudfront.CachePolicy.CACHING_OPTIMIZED,
-				allowedMethods: awsCloudfront.AllowedMethods.ALLOW_GET_HEAD,
-				cachedMethods: awsCloudfront.AllowedMethods.ALLOW_GET_HEAD,
-				viewerProtocolPolicy:
-					awsCloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-			},
+			prefix: 'protected/',
+			suffix: '.mp3',
 		}
 	)
 
@@ -66,5 +60,5 @@ export function createDocAudioBucket(
 		roles: [props.authenticatedRole],
 	})
 
-	return { fileStorageBucket, fileStorageBucketCFDistribution }
+	return { fileStorageBucket }
 }
